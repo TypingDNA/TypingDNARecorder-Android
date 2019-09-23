@@ -2,8 +2,7 @@
  * TypingDNA - Typing Biometrics Recorder for Android
  * https://www.typingdna.com
  *
- *
- * @version 3.0
+ * @version 3.1
  * @author Raul Popa & Stefan Endres
  * @copyright TypingDNA Inc. https://www.typingdna.com
  * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -11,17 +10,17 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
+ * <p>
  * Typical usage:
  * TypingDNARecorderMobile tdna = new TypingDNARecorderMobile(this); // creates a new TypingDNA object and starts recording
  * String typingPattern = tdna.getTypingPattern(type, length, text, textId, targetId, caseSensitive);
- *
+ * <p>
  * Optional:
  * tdna.stop(); // ends recording and clears history stack (returns recording flag: false)
  * tdna.start(); // restarts the recording after a stop (returns recording flag: true)
@@ -72,26 +71,25 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
     private int ut1 = 0;
     private SensorManager mSensorManager;
     private Sensor mAccelerationSensor;
-    private Sensor mOrientationSensor;
     private Sensor mGyroscope;
     private int linear_acceleration[] = new int[3];
-    private static ArrayList<Integer>  accelerationZVector = new ArrayList<Integer>();
+    private static ArrayList<Integer> accelerationZVector = new ArrayList<Integer>();
     private int orientation[] = new int[3];
     private int gyroscope[] = new int[3];
-    private static ArrayList<Integer>  gyroscopeYVector = new ArrayList<Integer>();
-    private static ArrayList<Integer>  gyroscopeXVector = new ArrayList<Integer>();
-    private static ArrayList<Integer>  sensorEventTsVector = new ArrayList<Integer>();
+    private static ArrayList<Integer> gyroscopeYVector = new ArrayList<Integer>();
+    private static ArrayList<Integer> gyroscopeXVector = new ArrayList<Integer>();
+    private static ArrayList<Integer> sensorEventTsVector = new ArrayList<Integer>();
     private Boolean recordSensors = true;
     private Timer sensorSampler;
     private static int sampleSize = 21;
     private ServiceConnection mServiceConnection;
     private static byte samplingInterval = 16;
-    private  Boolean pressCalculated = false;
-    private  Boolean pressWorks = false;
-    private static Boolean overlayEnabled  = true;
-    private static final int[] keyCodes = new int[] { 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
-            45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 62, 75 , 120, 67, 74, 70, 124, 259, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-            16 };
+    private Boolean pressCalculated = false;
+    private Boolean pressWorks = false;
+    private static Boolean overlayEnabled = true;
+    private static final int[] keyCodes = new int[]{29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
+            45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 62, 75, 120, 67, 74, 70, 124, 259, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+            16};
 
 
     public TypingDNARecorderMobile(Activity activity) {
@@ -104,14 +102,14 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
     //Overrides
 
     @Override
-    public void initialize(){
+    public void initialize() {
         mServiceIsBound = false;
         recordSensors = false;
-        if(Build.VERSION.SDK_INT >= 11)
+        if (Build.VERSION.SDK_INT >= 11)
             mKeyCharacterMap = KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD);
         else
             mKeyCharacterMap = KeyCharacterMap.load(KeyCharacterMap.ALPHA);
-        if(keyCodes != null) {
+        if (keyCodes != null) {
             setKeyCodes(keyCodes);
         }
         super.initialize();
@@ -122,18 +120,18 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
     }
 
     @Override
-    public String getDeviceId(){
+    public String getDeviceId() {
         String androidId = Settings.Secure.getString(mActivity.getContentResolver(), Settings.Secure.ANDROID_ID);
         return hash32(androidId);
     }
 
     @Override
     public String getTypingPattern(int type, int length, String text, int textId, Integer target, boolean caseSensitive) {
-        if(mActivity != null && target != null && (text == null || text.equals(""))) {
-            try{
+        if (mActivity != null && target != null && (text == null || text.equals(""))) {
+            try {
                 text = ((EditText) mActivity.findViewById(target)).getText().toString();
-            } catch(Exception e){
-                Log.e("TypingDNARecorder","getTypingPattern - get text error: " + e.getMessage());
+            } catch (Exception e) {
+                Log.e("TypingDNARecorder", "getTypingPattern - get text error: " + e.getMessage());
             }
         }
         setPressType(getRecorderPressType());
@@ -155,103 +153,110 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
     }
 
     @Override
-    public void onSensorChanged(SensorEvent event){
+    public void onSensorChanged(SensorEvent event) {
         Sensor sensor = event.sensor;
         if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            linear_acceleration[0] = (int)(100 * event.values[0]);
-            linear_acceleration[1] = (int)(100 * event.values[1]);
-            linear_acceleration[2] = (int)(100 * event.values[2]);
-        } else if (sensor.getType() == Sensor.TYPE_ORIENTATION) {
-            orientation[0] = (int)(10 * event.values[0]);
-            int pitch =  (int)(-10 * event.values[1]);
-            int roll =  (int)(-10 * event.values[2]);
-            if(pitch > 900){
-                roll = ((roll > 0) ? 1800 : -1800) - roll;
-            }
-            orientation[1] = pitch;
-            orientation[2] = roll;
+            linear_acceleration[0] = (int) (100 * event.values[0]);
+            linear_acceleration[1] = (int) (100 * event.values[1]);
+            linear_acceleration[2] = (int) (100 * event.values[2]);
+
+            float accX = linear_acceleration[0];
+            float accY = linear_acceleration[1];
+            float accZ = linear_acceleration[2];
+
+            orientation[1] = (int) ((Math.atan2(-accY, Math.sqrt(Math.pow(accX, 2) + Math.pow(accZ, 2))) * 180 / Math.PI) * 10);
+            orientation[2] = (int) ((Math.atan2(-accX, Math.sqrt(Math.pow(accY, 2) + Math.pow(accZ, 2))) * 180 / Math.PI) * 10);
         } else if (sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-            gyroscope[0] = (int)(573 * event.values[0]);
-            gyroscope[1] = (int)(573 * event.values[1]);
-            gyroscope[2] = (int)(573 * event.values[2]);
+            gyroscope[0] = (int) (573 * event.values[0]);
+            gyroscope[1] = (int) (573 * event.values[1]);
+            gyroscope[2] = (int) (573 * event.values[2]);
         }
     }
 
     @Override
-    public void start(){
+    public void start() {
         lastPressTime = getTime();
         startSensors();
-        if(!mServiceIsBound) {
+        if (!mServiceIsBound) {
             startOverlayService();
         }
         super.start();
     }
 
     @Override
-    public void reset(){
+    public void reset() {
         lastPressTime = getTime();
         super.reset();
     }
 
     @Override
-    public void stop(){
-        if(mServiceIsBound) {
+    public void stop() {
+        if (mServiceIsBound) {
             stopOverlayService();
         }
         stopSensors();
         super.stop();
     }
 
-
-    /**
-     * This method removes the overlay. Use this method when the application is paused.
-     */
-    public void pause(){
+    public void pause() {
         stopSensors();
-        if(typingDNAOverlayService != null) {
+        if (typingDNAOverlayService != null) {
             typingDNAOverlayService.pause();
         }
     }
 
-    private boolean hasSensors(){
-        if(mActivity != null) {
+    private boolean hasSensors() {
+        return hasAccelerometer() && hasGyroscope();
+    }
+
+    private boolean hasAccelerometer() {
+        if (mActivity != null) {
             PackageManager manager = mActivity.getPackageManager();
-            return (
-                    manager.hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER) &&
-                            manager.hasSystemFeature(PackageManager.FEATURE_SENSOR_GYROSCOPE)
-            );
+            return manager.hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER);
 
         }
         return false;
     }
 
-    public void startSensors(){
-        if(mActivity != null && hasSensors()) {
+    private boolean hasGyroscope() {
+        if (mActivity != null) {
+            PackageManager manager = mActivity.getPackageManager();
+            return manager.hasSystemFeature(PackageManager.FEATURE_SENSOR_GYROSCOPE);
+
+        }
+        return false;
+    }
+
+    public void startSensors() {
+        if (mActivity != null) {
             mSensorManager = (SensorManager) mActivity.getSystemService(Context.SENSOR_SERVICE);
-            mAccelerationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            mOrientationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-            mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
             clearSensorData();
-            mSensorManager.registerListener(this, mAccelerationSensor,
-                    2000
-            );
-            mSensorManager.registerListener(this, mOrientationSensor,
-                    2000
-            );
-            mSensorManager.registerListener(this, mGyroscope,
-                    2000
-            );
-            startSensorSampler();
+            boolean hasSensors = false;
+            if (hasAccelerometer()) {
+                mAccelerationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+                mSensorManager.registerListener(this, mAccelerationSensor,
+                        2000
+                );
+                hasSensors = true;
+            }
+            if (hasGyroscope()) {
+                mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+                mSensorManager.registerListener(this, mGyroscope,
+                        2000
+                );
+                hasSensors = true;
+            }
+            if (hasSensors) {
+                startSensorSampler();
+            }
         }
     }
 
-    public void stopSensors(){
-        if(mSensorManager != null) {
+    public void stopSensors() {
+        if (mSensorManager != null) {
             mSensorManager.unregisterListener(this, mAccelerationSensor);
-            mSensorManager.unregisterListener(this, mOrientationSensor);
             mSensorManager.unregisterListener(this, mGyroscope);
             mSensorManager = null;
-            mOrientationSensor = null;
             mAccelerationSensor = null;
             mGyroscope = null;
             stopSensorSampler();
@@ -259,7 +264,7 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
         }
     }
 
-    private void clearSensorData(){
+    private void clearSensorData() {
         gyroscopeXVector.clear();
         gyroscopeYVector.clear();
         accelerationZVector.clear();
@@ -267,13 +272,13 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
     }
 
     public void addTarget(int targetId) {
-        EditText target =(EditText) mActivity.findViewById(targetId);
+        EditText target = (EditText) mActivity.findViewById(targetId);
         addEditTextListeners(target);
         super.addTarget(targetId);
     }
 
     public void addTarget(int[] targetIds) {
-        for(int i = 0; i < targetIds.length; i++) {
+        for (int i = 0; i < targetIds.length; i++) {
             addTarget(targetIds[i]);
         }
     }
@@ -283,17 +288,17 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
     }
 
     public void removeTarget(int[] targetIds) {
-        for(int i = 0; i < targetIds.length; i++) {
+        for (int i = 0; i < targetIds.length; i++) {
             removeTarget(targetIds[i]);
         }
     }
 
     public void mobileKeyDown(int x, int y) {
         int time = getTime();
-        if(!pressWorks) {
+        if (!pressWorks) {
             pressWorks = true;
         }
-        if(time != lastPressTime) {
+        if (time != lastPressTime) {
             lastPressX = x;
             lastPressY = y;
             lastPressTime = time;
@@ -301,7 +306,7 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
     }
 
     public void mobileKeyReleased(int keyCode, char keyChar, boolean modifiers, Integer time, Integer target, Object[] kpGet, String xy) {
-        if ((!recording && !diagramRecording) ||  keyCode >= maxKeyCode) {
+        if ((!recording && !diagramRecording) || keyCode >= maxKeyCode) {
             return;
         }
         if (!isTarget(target)) {
@@ -309,12 +314,12 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
         }
         int t0 = ut1;
         ut1 = time;
-        int seekTime = (int)(ut1 - t0);
+        int seekTime = (int) (ut1 - t0);
         int downTime = (int) kpGet[0];
-        int pressTime = (downTime != 0) ? (int)(ut1 - downTime) : 0;
-        if(recording == true && !modifiers) {
+        int pressTime = (downTime != 0) ? (int) (ut1 - downTime) : 0;
+        if (recording == true && !modifiers) {
             if (keyCodesObj[keyCode] == 1) {
-                int[] arr = new int[] { keyCode, seekTime, pressTime, prevKeyCode, ut1, target };
+                int[] arr = new int[]{keyCode, seekTime, pressTime, prevKeyCode, ut1, target};
                 historyAdd(arr);
                 prevKeyCode = keyCode;
             }
@@ -324,29 +329,27 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
             String kp1 = (String) kpGet[2];
             String kp2 = (String) kpGet[3];
             String kp3 = (String) kpGet[4];
-            Object[] arrD = new Object[] {keyCode, seekTime, pressTime, keyChar, ut1, target, kp0, kp1, kp2, kp3, xy};
+            Object[] arrD = new Object[]{keyCode, seekTime, pressTime, keyChar, ut1, target, kp0, kp1, kp2, kp3, xy};
             historyAddDiagram(arrD);
         }
     }
 
-    public void addEditTextListeners(EditText et){
+    public void addEditTextListeners(EditText et) {
         final EditText _et = et;
-        et.addTextChangedListener( new TextWatcher()
-        {
+        et.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-                try
-                {
+                try {
                     int time = getTime();
-                    if (time != lastReleaseTime){
+                    if (time != lastReleaseTime) {
                         last2ReleaseTime = lastReleaseTime;
                         lastReleaseTime = time;
-                        if(arg0.length() > 0 && arg0.length() > (arg1 + arg2)) {
+                        if (arg0.length() > 0 && arg0.length() > (arg1 + arg2)) {
                             Object[] kpGet = kpGetAll();
-                            String currentChar =  Character.toString(arg0.charAt(arg1 + arg2));
+                            String currentChar = Character.toString(arg0.charAt(arg1 + arg2));
                             KeyEvent[] events = mKeyCharacterMap.getEvents(currentChar.toCharArray());
                             int keycode = 0;
-                            if(events != null) {
+                            if (events != null) {
                                 if (events[0].getAction() == 0) {
                                     keycode = events[0].getKeyCode();
                                 }
@@ -356,9 +359,7 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
                             mobileKeyReleased(keycode, arg0.charAt(arg1 + arg2), modifiers, time, _et.getId(), kpGet, xy);
                         }
                     }
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     Log.e("TypingDNARecorder", "onTextChanged Error:" + e.getMessage());
                 }
             }
@@ -374,7 +375,7 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
         et.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                mobileKeyDown(0,0);
+                mobileKeyDown(0, 0);
                 return false;
             }
         });
@@ -385,7 +386,7 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
         int length = arr.length - 1;
         ArrayList<Integer[]> ret = new ArrayList<Integer[]>();
         if (length < 2) {
-            Integer[] newArr = new Integer[] {0};
+            Integer[] newArr = new Integer[]{0};
             ret.add(newArr);
             ret.add(newArr.clone());
             return ret;
@@ -395,7 +396,7 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
         final Integer[] newArr = new Integer[length];
         final Integer[] returnArr = new Integer[length];
         for (int i = 0; i < length; i++) {
-            firstArr[i+1] = (int)arr[i + 1] - (int)arr[i];
+            firstArr[i + 1] = (int) arr[i + 1] - (int) arr[i];
         }
         for (int i = 0; i < length; i++) {
             int newVal = firstArr[i + 1] - firstArr[i];
@@ -411,7 +412,7 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
         int length = arr.length - 2;
         ArrayList<Integer[]> ret = new ArrayList<Integer[]>();
         if (length < 0) {
-            Integer[] newArr = new Integer[] {0};
+            Integer[] newArr = new Integer[]{0};
             ret.add(newArr);
             ret.add(newArr.clone());
             return ret;
@@ -419,32 +420,32 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
         int posMax = 0;
         int posMin = 0;
         Integer[] firstArr;
-        if(length > 0) {
+        if (length > 0) {
             firstArr = new Integer[length];
             for (int i = 0; i < length; i++) {
-                firstArr[i] =  (int)arr[i + 1] - (int)arr[i];
-                if(firstArr[i] > firstArr[posMax]){
+                firstArr[i] = (int) arr[i + 1] - (int) arr[i];
+                if (firstArr[i] > firstArr[posMax]) {
                     posMax = i;
                 }
-                if(firstArr[i] < firstArr[posMin]){
+                if (firstArr[i] < firstArr[posMin]) {
                     posMin = i;
                 }
             }
-        }else{
-            int newVal = (int)arr[1] - (int)arr[0];
+        } else {
+            int newVal = (int) arr[1] - (int) arr[0];
             firstArr = new Integer[]{newVal};
         }
-        Integer[] returnArr = new Integer[] {
-                posMax-1,
+        Integer[] returnArr = new Integer[]{
+                posMax - 1,
                 posMax,
-                posMax+1,
-                posMax+2,
-                posMax+3,
-                posMin-1,
+                posMax + 1,
+                posMax + 2,
+                posMax + 3,
+                posMin - 1,
                 posMin,
-                posMin+1,
-                posMin+2,
-                posMin+3};
+                posMin + 1,
+                posMin + 2,
+                posMin + 3};
         ret.add(firstArr);
         ret.add(returnArr);
         return ret;
@@ -454,7 +455,7 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
         if (accelerationZVector.size() < 2) {
             int returnVal = (lastPressTime >= last2ReleaseTime) ? lastPressTime : 0;
             Integer[] returnMotionArr = getDeviceMotion();
-            String returnMotionStr =  arrayJoin(returnMotionArr, ",");
+            String returnMotionStr = arrayJoin(returnMotionArr, ",");
             return new Object[]{returnVal, returnMotionStr, "0", "0", "0"};
         } else {
             ArrayList<Integer[]> kpZA2 = new ArrayList<Integer[]>();
@@ -469,16 +470,16 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
             Integer[] kpxPos = kpXR2.get(1);
             Integer[] kpYR = kpYR2.get(0);
             Integer[] kpyPos = kpYR2.get(1);
-            if(accelerationZVector.size() >2){
+            if (accelerationZVector.size() > 2) {
                 accelerationZVector.remove(0);
             }
-            if(gyroscopeXVector.size() >2){
+            if (gyroscopeXVector.size() > 2) {
                 gyroscopeXVector.remove(0);
             }
-            if(gyroscopeYVector.size() >2){
+            if (gyroscopeYVector.size() > 2) {
                 gyroscopeYVector.remove(0);
             }
-            if(sensorEventTsVector.size() >2){
+            if (sensorEventTsVector.size() > 2) {
                 sensorEventTsVector.remove(0);
             }
 
@@ -488,13 +489,13 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
                 Integer[] kpPos = concat(kpxPos, kpyPos);
                 Arrays.sort(kpPos);
                 List<Integer> kpxyPos = new ArrayList<Integer>();
-                for (int i = 1; i < kpPos.length; i ++) {
-                    if (kpPos[i] != kpPos[i-1]) {
+                for (int i = 1; i < kpPos.length; i++) {
+                    if (kpPos[i] != kpPos[i - 1]) {
                         kpxyPos.add(kpPos[i]);
                     }
                 }
                 int lastKpza = 0;
-                int lastKpTime = (int)sensorEventTsVector.get(sensorEventTsVector.size()-1);
+                int lastKpTime = (int) sensorEventTsVector.get(sensorEventTsVector.size() - 1);
                 for (int i = 0; i < kpxyPos.size(); i++) {
                     int j = kpxyPos.get(i);
                     int minj = (kpzaAbs.length > 8) ? 2 : ((kpzaAbs.length > 4) ? 1 : 0);
@@ -514,36 +515,36 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
             String kp2 = arrayJoin(kpXR, ",");
             String kp3 = arrayJoin(kpYR, ",");
             clearSensorData();
-            return new Object[] {returnVal, kp0, kp1, kp2, kp3};
+            return new Object[]{returnVal, kp0, kp1, kp2, kp3};
         }
     }
 
-    private Integer[] getDeviceMotion(){
+    private Integer[] getDeviceMotion() {
         Integer[] deviceMotion = new Integer[8];
-        if(linear_acceleration != null && linear_acceleration.length > 2) {
+        if (linear_acceleration != null && linear_acceleration.length > 2) {
             deviceMotion[0] = linear_acceleration[0];
             deviceMotion[1] = linear_acceleration[1];
         }
-        if(accelerationZVector != null && accelerationZVector.size() > 1) {
-            deviceMotion[2] = accelerationZVector.get(accelerationZVector.size()-1);
+        if (accelerationZVector != null && accelerationZVector.size() > 1) {
+            deviceMotion[2] = accelerationZVector.get(accelerationZVector.size() - 1);
         }
-        if(gyroscopeXVector != null && gyroscopeXVector.size() > 1) {
+        if (gyroscopeXVector != null && gyroscopeXVector.size() > 1) {
             deviceMotion[3] = gyroscopeXVector.get(gyroscopeXVector.size() - 1);
         }
-        if(gyroscopeXVector != null && gyroscopeXVector.size() > 1) {
-            deviceMotion[4] = gyroscopeYVector.get(gyroscopeYVector.size()-1);
+        if (gyroscopeXVector != null && gyroscopeXVector.size() > 1) {
+            deviceMotion[4] = gyroscopeYVector.get(gyroscopeYVector.size() - 1);
         }
-        if(gyroscope != null && gyroscope.length > 2) {
+        if (gyroscope != null && gyroscope.length > 2) {
             deviceMotion[5] = gyroscope[2];
         }
-        if(orientation != null && orientation.length > 2) {
+        if (orientation != null && orientation.length > 2) {
             deviceMotion[6] = orientation[1];
-            deviceMotion[6] = orientation[2];
+            deviceMotion[7] = orientation[2];
         }
         return deviceMotion;
     }
 
-    public static Integer[] concat(Integer[] a, Integer[] b){
+    public static Integer[] concat(Integer[] a, Integer[] b) {
         int length = a.length + b.length;
         Integer[] result = new Integer[length];
         System.arraycopy(a, 0, result, 0, a.length);
@@ -551,64 +552,64 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
         return result;
     }
 
-    private void stopSensorSampler(){
-        if(sensorSampler != null) {
+    private void stopSensorSampler() {
+        if (sensorSampler != null) {
             sensorSampler.cancel();
             sensorSampler.purge();
             sensorSampler = null;
         }
     }
 
-    private void startSensorSampler(){
-        if(sensorSampler == null) {
+    private void startSensorSampler() {
+        if (sensorSampler == null) {
             sensorSampler = new Timer();
-            sensorSampler.scheduleAtFixedRate(new TimerTask(){
+            sensorSampler.scheduleAtFixedRate(new TimerTask() {
                 @Override
-                public void run(){
-                    if(recordSensors) {
+                public void run() {
+                    if (recordSensors) {
                         recordSensorData(gyroscopeXVector, gyroscope[0]);
                         recordSensorData(gyroscopeYVector, gyroscope[1]);
                         recordSensorData(accelerationZVector, linear_acceleration[2]);
                         recordSensorTime(sensorEventTsVector, getTime());
                     }
                 }
-            },0,samplingInterval);
+            }, 0, samplingInterval);
         }
     }
 
-    private byte getRecorderPressType(){
+    private byte getRecorderPressType() {
         byte ret = 0;
-        if(pressWorks) {
+        if (pressWorks) {
             ret = 1;
-        } else if(pressCalculated) {
+        } else if (pressCalculated) {
             ret = 2;
         }
-        if(pressWorks && pressCalculated) {
+        if (pressWorks && pressCalculated) {
             ret = 3;
         }
         return ret;
     }
 
-    private void recordSensorData(ArrayList<Integer> vector, Integer data){
-        if(vector.size() >= sampleSize ) {
+    private void recordSensorData(ArrayList<Integer> vector, Integer data) {
+        if (vector.size() >= sampleSize) {
             vector.remove(0);
         }
         vector.add(data);
     }
 
-    private void recordSensorTime(ArrayList<Integer> vector, int data){
-        if(vector.size() >= sampleSize ) {
+    private void recordSensorTime(ArrayList<Integer> vector, int data) {
+        if (vector.size() >= sampleSize) {
             vector.remove(0);
         }
         vector.add(data);
     }
 
-    public boolean checkOverlayPermission(){
-        if(mActivity == null) {
+    public boolean checkOverlayPermission() {
+        if (mActivity == null) {
             return false;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if(!Settings.canDrawOverlays(mActivity.getApplicationContext()) ){
+            if (!Settings.canDrawOverlays(mActivity.getApplicationContext())) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         Uri.parse("package:" + mActivity.getPackageName())
                 );
@@ -622,7 +623,7 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
         return true;
     }
 
-    private void initServiceConnection(){
+    private void initServiceConnection() {
         mServiceConnection = new ServiceConnection() {
             public void onServiceConnected(ComponentName className, IBinder service) {
                 typingDNAOverlayService = ((TypingDNAOverlayService.LocalBinder) service).getService();
@@ -636,7 +637,7 @@ public class TypingDNARecorderMobile extends TypingDNARecorderBase implements Se
     }
 
     public void startOverlayService() {
-        if(!overlayEnabled || !checkOverlayPermission()) {
+        if (!overlayEnabled || !checkOverlayPermission()) {
             return;
         }
         try {

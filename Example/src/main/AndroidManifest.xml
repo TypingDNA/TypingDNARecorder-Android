@@ -18,11 +18,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service
-            android:name="com.typingdna.TypingDNAOverlayService"
-            android:enabled="true"
-            android:exported="true"
-            >
+
+        <service android:name="com.typingdna.TypingDNAOverlayService">
         </service>
     </application>
 

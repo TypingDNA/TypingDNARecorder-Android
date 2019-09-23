@@ -2,8 +2,7 @@
  * TypingDNA - Typing Biometrics Recorder Base
  * https://www.typingdna.com
  *
- *
- * @version 3.0
+ * @version 3.1
  * @author Raul Popa & Stefan Endres
  * @copyright TypingDNA Inc. https://www.typingdna.com
  * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -11,17 +10,17 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
+ * <p>
  * Typical usage:
  * TypingDNARecorderMobile tdna = new TypingDNARecorderMobile(this); // creates a new TypingDNA object and starts recording
  * String typingPattern = tdna.getTypingPattern(type, length, text, textId, targetId, caseSensitive);
- *
+ * <p>
  * Optional:
  * tdna.stop(); // ends recording and clears history stack (returns recording flag: false)
  * tdna.start(); // restarts the recording after a stop (returns recording flag: true)
@@ -32,7 +31,6 @@ package com.typingdna;
 
 import android.content.res.Resources;
 import android.os.Build;
-import android.util.Log;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -59,13 +57,14 @@ public class TypingDNARecorderBase {
     public static boolean diagramRecording = true;
     public static boolean motionFixedData = true;
     public static boolean motionArrayData = true;
-    public static final double version = 3.0; // (without MOUSE tracking and without special keys)
+    public static final double version = 3.1; // (without MOUSE tracking and without special keys)
 
     private static final int flags = 4; // JAVA version has flag=1
     private static final int maxSeekTime = 1500;
     private static final int maxPressTime = 300;
-    private static final int[] spKeyCodes = new int[] { 8, 10, 32 };
+    private static final int[] spKeyCodes = new int[]{8, 10, 32};
     private static final Map<Integer, Boolean> spKeyCodesObj;
+
     static {
         spKeyCodesObj = new HashMap<Integer, Boolean>();
         spKeyCodesObj.put(8, true);
@@ -73,9 +72,9 @@ public class TypingDNARecorderBase {
         spKeyCodesObj.put(32, true);
     }
 
-    public int[] keyCodes = new int[] { 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80,
+    public int[] keyCodes = new int[]{65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80,
             81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 32, 222, 44, 46, 59, 61, 45, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56,
-            57 };
+            57};
     public static int maxKeyCode = 300;
     private static int defaultHistoryLength = 160;
     public static int[] keyCodesObj = new int[maxKeyCode];
@@ -104,10 +103,10 @@ public class TypingDNARecorderBase {
     }
 
     public void initialize() {
-        if(initialized) {
+        if (initialized) {
             return;
         }
-        if(keyCodes != null ){
+        if (keyCodes != null) {
             for (int i = 0; i < keyCodes.length; i++) {
                 keyCodesObj[(int) keyCodes[i]] = 1;
             }
@@ -175,13 +174,13 @@ public class TypingDNARecorderBase {
     }
 
     public static void addTarget(Integer targetId) {
-        if(targetIds.isEmpty() || targetIds.indexOf(targetId) == -1){
+        if (targetIds.isEmpty() || targetIds.indexOf(targetId) == -1) {
             targetIds.add(targetId);
         }
     }
 
     public static void removeTarget(Integer targetId) {
-        if(targetIds.indexOf(targetId) > -1){
+        if (targetIds.indexOf(targetId) > -1) {
             targetIds.remove(targetId);
         }
     }
@@ -191,7 +190,7 @@ public class TypingDNARecorderBase {
     }
 
     public void setKeyCodes(int[] keyCodes) {
-        if(keyCodes != null) {
+        if (keyCodes != null) {
             this.keyCodes = keyCodes.clone();
             for (int i = 0; i < keyCodes.length; i++) {
                 keyCodesObj[(int) keyCodes[i]] = 1;
@@ -207,7 +206,7 @@ public class TypingDNARecorderBase {
         pt1 = time != null ? time : getTime();
         int seekTotal = (int) (pt1 - t0);
         long startTime = pt1;
-        if(keyCode >= maxKeyCode) {
+        if (keyCode >= maxKeyCode) {
             return;
         }
         if (recording == true && !modifiers) {
@@ -227,19 +226,19 @@ public class TypingDNARecorderBase {
     }
 
     public static void keyTyped(char keyChar) {
-        if (diagramRecording == true && (Character.isDefined(keyChar)) && lastPressedKey < maxKeyCode ) {
-            drkc[lastPressedKey] = (int)keyChar;
+        if (diagramRecording == true && (Character.isDefined(keyChar)) && lastPressedKey < maxKeyCode) {
+            drkc[lastPressedKey] = (int) keyChar;
         }
     }
 
 
     public void keyReleased(int keyCode, char keyChar, boolean modifiers, int time, Integer target) {
-        keyReleased(keyCode, keyChar, modifiers, time, target, new Object[]{},"");
+        keyReleased(keyCode, keyChar, modifiers, time, target, new Object[]{}, "");
     }
 
     public void keyReleased(int keyCode, char keyChar, boolean modifiers, Integer time, Integer target, Object[] kpGet, String xy) {
 
-        if ((!recording && !diagramRecording) ||  keyCode >= maxKeyCode) {
+        if ((!recording && !diagramRecording) || keyCode >= maxKeyCode) {
             return;
         }
 
@@ -253,7 +252,7 @@ public class TypingDNARecorderBase {
                 if (wfk[keyCode] == 1) {
                     int pressTime = (int) (ut - sti[keyCode]);
                     int seekTime = skt[keyCode];
-                    int[] arr = new int[] { keyCode, seekTime, pressTime, prevKeyCode };
+                    int[] arr = new int[]{keyCode, seekTime, pressTime, prevKeyCode};
                     historyAdd(arr);
                     prevKeyCode = keyCode;
                     wfk[keyCode] = 0;
@@ -265,7 +264,7 @@ public class TypingDNARecorderBase {
                 int pressTime = (int) (ut - dsti[keyCode]);
                 int seekTime = dskt[keyCode];
                 int realKeyCode = drkc[keyCode];
-                Object[] arrD = new Object[] { keyCode, seekTime, pressTime, realKeyCode };
+                Object[] arrD = new Object[]{keyCode, seekTime, pressTime, realKeyCode};
                 historyAddDiagram(arrD);
             }
             dwfk[keyCode] = 0;
@@ -273,7 +272,7 @@ public class TypingDNARecorderBase {
     }
 
     public static String hash32(String str) {
-        if(str == null) {
+        if (str == null) {
             return "";
         }
         str = str.toLowerCase();
@@ -288,7 +287,7 @@ public class TypingDNARecorderBase {
         this.mPressType = pressType;
     }
 
-    private static String  getSpecialKeys(){
+    private static String getSpecialKeys() {
         ArrayList<Integer> returnArr = new ArrayList<Integer>();
         int length = historyStack.size();
         Map<Integer, ArrayList<Integer>> historyStackObj = new HashMap<Integer, ArrayList<Integer>>();
@@ -450,7 +449,7 @@ public class TypingDNARecorderBase {
                 while (found == false) {
                     for (int j = startPos; j < finishPos; j++) {
                         Object[] arr = finalStackDiagram.get(j);
-                        int charCode = (int)((char) arr[3]);
+                        int charCode = (int) ((char) arr[3]);
                         if (charCode == currentCharCode || (!caseSensitive && charCode == currentSensitiveCharCode)) {
                             found = true;
                             if (j == lastPos) {
@@ -480,9 +479,9 @@ public class TypingDNARecorderBase {
                                 motionArr.add(el);
                             }
                             if (motionArrayData) {
-                                kpzaArr.add((String)arr[7]);
-                                kpxrArr.add((String)arr[8]);
-                                kpyrArr.add((String)arr[9]);
+                                kpzaArr.add((String) arr[7]);
+                                kpxrArr.add((String) arr[8]);
+                                kpyrArr.add((String) arr[9]);
                             }
                             break;
                         }
@@ -543,11 +542,11 @@ public class TypingDNARecorderBase {
             }
             for (int i = startCount; i < diagramHistoryLength; i++) {
                 Object[] arr = finalStackDiagram.get(i);
-                int keyCode = (int)arr[0];
-                int seekTime = (int)arr[1];
-                int pressTime = (int)arr[2];
+                int keyCode = (int) arr[0];
+                int seekTime = (int) arr[1];
+                int pressTime = (int) arr[2];
                 if (extended) {
-                    int charCode = (int)arr[3];
+                    int charCode = (int) arr[3];
                     returnStr += "|" + charCode + "," + seekTime + "," + pressTime + "," + keyCode;
                 } else {
                     returnStr += "|" + seekTime + "," + pressTime;
@@ -560,19 +559,19 @@ public class TypingDNARecorderBase {
                     motionArr.add(el);
                 }
                 if (motionArrayData) {
-                    kpzaArr.add((String)arr[7]);
-                    kpxrArr.add((String)arr[8]);
-                    kpyrArr.add((String)arr[9]);
+                    kpzaArr.add((String) arr[7]);
+                    kpxrArr.add((String) arr[8]);
+                    kpyrArr.add((String) arr[9]);
                 }
             }
         }
         if (motionFixedData) {
-            returnStr += "#" + arrayJoin(motionArr,"|");
+            returnStr += "#" + arrayJoin(motionArr, "|");
         }
         if (motionArrayData) {
-            returnStr += "#" + arrayJoin(kpzaArr,"|");
-            returnStr += "/" + arrayJoin(kpxrArr,"|");
-            returnStr += "/" + arrayJoin(kpyrArr,"|");
+            returnStr += "#" + arrayJoin(kpzaArr, "|");
+            returnStr += "/" + arrayJoin(kpxrArr, "|");
+            returnStr += "/" + arrayJoin(kpyrArr, "|");
         }
         return returnStr;
     }
@@ -810,11 +809,11 @@ public class TypingDNARecorderBase {
         }
     }
 
-    public static boolean isTarget(Integer target){
+    public static boolean isTarget(Integer target) {
         return targetIds.indexOf(target) > -1;
     }
 
-    private static ArrayList<Object[]> sliceStackByTargetId(ArrayList<Object[]> stack, Integer targetId){
+    private static ArrayList<Object[]> sliceStackByTargetId(ArrayList<Object[]> stack, Integer targetId) {
         ArrayList<Object[]> newStack = new ArrayList<Object[]>();
         for (Object[] arr : stack) {
             if ((int) arr[5] == targetId) {
@@ -838,8 +837,8 @@ public class TypingDNARecorderBase {
     }
 
     private String getDeviceSignature() {
-        byte deviceType = 0; // {0:unknown, 1:pc, 2:phone, 3:tablet}
-        String deviceModel = hash32((Build.MANUFACTURER +"-"+ Build.MODEL));
+        byte deviceType = 2; // {0:unknown, 1:pc, 2:phone, 3:tablet}
+        String deviceModel = padRight(hash32(Build.MANUFACTURER), 12) + hash32(Build.MODEL);
         String deviceId = getDeviceId();
         byte isMobile = 2; // {0:unknown, 1:pc, 2:mobile}
         byte operatingSystem = 6; // {0:unknown/other, 1:Windows, 2:MacOS, 3:Linux, 4:ChromeOS, 5:iOS, 6: Android}
@@ -858,20 +857,29 @@ public class TypingDNARecorderBase {
         byte browserVersion = 0; // numbers only
         byte cookieId = 0; // only in iframe
 
-        String signatureStr = deviceType + "-" + deviceModel+ "-"+ deviceId +"-"+ isMobile + "-" + operatingSystem + "-" + programmingLanguage + "-"
+        String signatureStr = deviceType + "-" + deviceModel + "-" + deviceId + "-" + isMobile + "-" + operatingSystem + "-" + programmingLanguage + "-"
                 + systemLanguage + "-" + isTouchDevice + "-" + pressType + "-" + keyboardInput + "-" + keyboardType + "-" + pointerInput
                 + "-" + browserType + "-" + displayWidth + "-" + displayHeight + "-" + orientation + "-" + osVersion
                 + "-" + browserVersion + "-" + cookieId;
         String signature = hash32(signatureStr).toString(); // fnv1aHash of all above!
 
-        String returnStr = deviceType + "," + deviceModel+ "," + deviceId +","+ isMobile + "," + operatingSystem + "," + programmingLanguage + ","
+        String returnStr = deviceType + "," + deviceModel + "," + deviceId + "," + isMobile + "," + operatingSystem + "," + programmingLanguage + ","
                 + systemLanguage + "," + isTouchDevice + "," + pressType + "," + keyboardInput + "," + keyboardType + "," + pointerInput
                 + "," + browserType + "," + displayWidth + "," + displayHeight + "," + orientation + "," + osVersion
                 + "," + browserVersion + "," + cookieId + "," + signature;
         return returnStr;
     }
 
-    public String getDeviceId(){
+    private String padRight(String s, int n) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(s);
+        for (int i = 0; i < n - s.length(); ++i) {
+            sb.append("0");
+        }
+        return sb.toString();
+    }
+
+    public String getDeviceId() {
         return "0";
     }
 
@@ -883,27 +891,27 @@ public class TypingDNARecorderBase {
         return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 
-    public static String arrayJoin(Integer[] array, String separator){
+    public static String arrayJoin(Integer[] array, String separator) {
         String res = "";
         ArrayList<Integer> list = new ArrayList<Integer>(Arrays.asList(array));
-        for(Integer el : list){
-            if(el == null){
+        for (Integer el : list) {
+            if (el == null) {
                 el = 0;
             }
             res += el.toString() + separator;
         }
-        if(res.length() >= separator.length()) {
+        if (res.length() >= separator.length()) {
             res = res.substring(0, res.length() - separator.length());
         }
         return res;
     }
 
-    public static String arrayJoin(ArrayList<String> list, String separator){
+    public static String arrayJoin(ArrayList<String> list, String separator) {
         String res = "";
-        for(String el : list){
+        for (String el : list) {
             res += el + separator;
         }
-        if(res.length() >= separator.length()) {
+        if (res.length() >= separator.length()) {
             res = res.substring(0, res.length() - separator.length());
         }
         return res;

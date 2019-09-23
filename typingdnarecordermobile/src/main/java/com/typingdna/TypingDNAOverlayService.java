@@ -2,8 +2,7 @@
  * TypingDNA - Typing Biometrics Overlay Service
  * https://www.typingdna.com
  *
- *
- * @version 3.0
+ * @version 3.1
  * @author Raul Popa & Stefan Endres
  * @copyright TypingDNA Inc. https://www.typingdna.com
  * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -11,15 +10,15 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- *  This class draws a screen overlay in order to capture touch events.
- *  This is a workaround for key down event.
+ * <p>
+ * This class draws a screen overlay in order to capture touch events.
+ * This is a workaround for key down event.
  */
 
 package com.typingdna;
@@ -53,16 +52,16 @@ public class TypingDNAOverlayService extends Service {
 
         @Override
         public boolean onTouchEvent(MotionEvent event) {
-            if(mTypingDNARecorderMobile != null) {
-                mTypingDNARecorderMobile.mobileKeyDown((int)event.getX(), (int)event.getY());
+            if (mTypingDNARecorderMobile != null) {
+                mTypingDNARecorderMobile.mobileKeyDown((int) event.getX(), (int) event.getY());
             }
             return false;
         }
 
         @Override
         public void onClick(View v) {
-            if(mTypingDNARecorderMobile != null) {
-                mTypingDNARecorderMobile.mobileKeyDown(0,0);
+            if (mTypingDNARecorderMobile != null) {
+                mTypingDNARecorderMobile.mobileKeyDown(0, 0);
             }
         }
 
@@ -105,7 +104,7 @@ public class TypingDNAOverlayService extends Service {
         return mBinder;
     }
 
-    private void creteOverly(){
+    private void creteOverly() {
         overlay = new Overlay(this);
         wParams = new WindowManager.LayoutParams(
                 1, 1, //Arbitrary size
@@ -127,41 +126,41 @@ public class TypingDNAOverlayService extends Service {
         this.mTypingDNARecorderMobile = mTypingDNARecorderMobile;
     }
 
-    public void displayOverlay(){
-        try{
+    public void displayOverlay() {
+        try {
             wm.addView(overlay, wParams);
             overlayVisible = true;
-        }catch(Exception e){
+        } catch (Exception e) {
             Log.e("TypingDNARecorder", " Display Overlay Error:" + e.getMessage());
             overlayVisible = false;
         }
     }
 
-    public void hideOverlay(){
-        try{
-            if (wm == null)  wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-            if(overlay != null && overlayVisible) {
+    public void hideOverlay() {
+        try {
+            if (wm == null) wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+            if (overlay != null && overlayVisible) {
                 wm.removeView(overlay);
                 wParams = null;
                 overlayVisible = false;
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.e("TypingDNARecorder", "Hide Overlay Error:" + e.getMessage());
         }
     }
 
-    public void pause(){
+    public void pause() {
         hideOverlay();
     }
 
-    public void start(){
-        if(!overlayVisible) {
+    public void start() {
+        if (!overlayVisible) {
             creteOverly();
             displayOverlay();
         }
     }
 
-    public void stop(){
+    public void stop() {
         hideOverlay();
     }
 }

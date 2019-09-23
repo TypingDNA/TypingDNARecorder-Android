@@ -27,14 +27,14 @@ public class Example extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_example);
-        if(tdna == null) {
-            //Initializes the typingDNA recorder and starts recording.
-            tdna = new TypingDNARecorderMobile(this);
-        } else {
-            tdna.start();
-        }
+
+        //Initializes the typingDNA recorder and starts recording.
+        tdna = new TypingDNARecorderMobile(this);
+        tdna.start();
+
         textField = findViewById(R.id.textField);
         resultOutput = findViewById(R.id.resultOutput);
+
         //Adds a target to the recorder. You can add multiple elements. All the typing evens will be recorded for this component.
         tdna.addTarget(R.id.textField);
     }
@@ -69,6 +69,7 @@ public class Example extends AppCompatActivity {
     public void reset(View view) {
         //Resets the history stack of recorded typing events.
         tdna.reset();
+
         resultOutput.setText("");
         textField.setText("");
         textField.requestFocus();
