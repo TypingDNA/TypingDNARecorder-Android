@@ -118,7 +118,7 @@ public String getTypingPattern(int type, int length, String text, int textId)
 ```java
 int type = 1;
 int length = 0; //optional
-String textToType = "Please type this sentence to get authenticated."
+String textToType = "Please type this sentence to get authenticated.";
 int textId = 0; //optional
 boolean caseSensitive = false; //optional
 String targetId = nameInput.getId();
