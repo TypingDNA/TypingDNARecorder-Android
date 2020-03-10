@@ -22,7 +22,7 @@
             android:layout_margin="10dp"
             android:ellipsize="end"
             android:ems="10"
-            android:inputType="textPersonName"
+            android:inputType="textVisiblePassword"
             android:importantForAutofill="no" />
 
         <Button

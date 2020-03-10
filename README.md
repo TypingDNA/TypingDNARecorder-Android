@@ -24,7 +24,7 @@ The recorder captures user’s typing patterns.
 It does so by recording timings based on keydown and keyup events, but also motion data related to the typing behavior (accelerometer, gyroscope, orientation).
 
 > **Note**: the Android version does not get the keydown events through the event notification system, therefore it needs a screen overlay to capture them. It is very
-important to include this in your apps. Also, please note that the recording might not work properly if emojis are used.
+important to include this in your apps. Also, please note that the recording might not work properly if the app allows swipe keyboards and autosuggestions or if emojis are used.
 
 
 For the recorder to work, the TypingDNAOverlayService must be registered as a service in AndroidManifest.xml:
@@ -216,8 +216,8 @@ protected void onPause(){
 
 ## Recommendations
 
-We recommend that you deactivate **autocorrect** & **predictive features**  for the text field(s) you want to record on.
+We recommend that you deactivate **autocorrect** & **predictive features**  for the text field(s) you want to record on. You can achieve this by setting `inputType` to `textVisiblePassword`.
 
 For mobile apps, we recommend you use  **type 1**  or **type 2**  typing patterns. The type 1/2 patterns work well with 15-30 chars of text, while type 0 pattern needs much more data to have good accuracy (120-150 chars of text).
 
-For types 1/2 we recommend at least 3 enrolled patterns for a good accuracy.
+For types 1/2 we recommend **at least 3 enrolled patterns** for a good accuracy.
